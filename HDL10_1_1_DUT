@@ -69,3 +69,8 @@ always @(*) begin
 
 
 endmodule
+
+    // 풀이가 지연된 이유 - Mealy Machine으로 FSM 설계 시 output을 만드는 logic에 대한 고정관념이 있었음.
+    // output은 input과 현재 state를 입력으로 하는 조합회로의 출력임
+    //  원래의 생각 - 만약 state도 변하고 output도 변하는 비동기 input이 들어오며 아직 clk edge가 오기 전일 경우, output이 꼭 현재 state에서 변해야함. 
+    //...
