@@ -1,0 +1,71 @@
+
+module seq_detector(
+    input ain,
+    input rst,
+    input clk,
+    output reg yout,
+    output reg [3:0] count
+);
+//세개의 always 블록을 이용. 1의 count 개수가 3의 배수이면 yout=1
+parameter DIV3  = 2'b00;
+parameter REST1 = 2'b01;
+parameter REST2 = 2'b10;
+parameter RESET = 2'b11;
+
+
+//sequential logic of states
+reg  [1:0] state;
+reg [1:0] next_state;
+always@(posedge clk or posedge rst) begin 
+    if(rst) begin //rst을 통한 카운트 0은 출력 X
+       state <= RESET;
+       count <= 4'b0;
+    end
+    else if(ain) begin    
+       count <= count + 1;
+       state <= next_state;
+    end
+    else begin
+        state <= next_state;
+        count <= count;
+    end
+end
+
+
+//combinational logic of a next_state
+always @(*) begin
+    
+    case (state)
+        DIV3    :   begin
+                    next_state = ain ? REST1    :   DIV3    ;
+                    end
+        REST1   :   begin
+                    next_state = ain ? REST2    :   REST1   ;
+                    end
+        REST2   :   begin
+                    next_state = ain ? DIV3     :   REST2   ;
+                    end
+        RESET   :   begin
+                    next_state = ain ? REST1    :   RESET   ;
+
+            end 
+    endcase
+
+end
+
+always @(*) begin
+        yout = 1;
+        case (state)
+            DIV3  : yout = ain ? 1 : 0; // Output 1 if total `1`s divisible by 3
+            REST1 : yout = 0;           // Not divisible by 3
+            REST2 : yout = 0;           // Not divisible by 3
+            RESET : yout = ~ain;
+        endcase
+    end
+//주어진 waveform을 보면 ain의 변화에 따라 비동기적으로 출력이 변하므로 
+//output yout combinational logic
+
+//assign yout = ((ain==1)&&(state==DIV3));
+
+
+endmodule
