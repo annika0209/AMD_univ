@@ -1,1 +1,84 @@
-.
+`timescale 1ns / 1ps
+
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 2024/11/19 18:52:43
+// Design Name: 
+// Module Name: testbench_1119
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module testbench_1119();
+
+  // 테스트할 DUT(Design Under Test)의 포트와 연결될 신호 선언
+  reg clk;             // 클럭 신호
+  reg reset;           // 리셋 신호
+  reg ain;   // 입력 신호 (예: 4비트)
+  wire yout; // 출력 신호 (예: 8비트)
+  wire [3:0] count;
+  // DUT 인스턴스화
+  seq_detector DUT (
+    .clk(clk),
+    .rst(reset),
+    .ain(ain),
+    .yout(yout),
+    .count(count));
+  
+
+  // 클럭 생성
+  always begin 
+   #5 clk = ~clk;  // 10ns 주기 클럭 생성
+  end
+
+  // 테스트 시나리오
+  initial begin
+    clk = 0;
+    // 초기화
+    reset = 1; ain = 0;
+    #20;       // 리셋 유지
+    // 리셋 비활성화 및 첫 번째 입력 적용
+    reset = 0; ain = 0;
+    #20;       
+    // 
+    reset = 0; ain = 1;
+    #20;
+    // 
+    reset = 0; ain = 0;
+    #60;
+    //
+    reset = 0; ain = 1;
+    #40;
+    //
+    reset = 0; ain = 0;
+    #20;
+    //
+    reset = 0; ain = 1;
+    #10;
+    //
+    reset = 1; ain = 1;
+    #10;
+    // 테스트 종료
+    $finish;
+  end
+
+  // 출력 모니터링
+  initial begin
+    $monitor("Time=%0t | reset=%b | ain=%d | yout=%d | count=%d", 
+             $time, reset, ain, yout, count);
+  end
+
+endmodule
+
